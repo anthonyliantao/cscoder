@@ -4,54 +4,73 @@ import numpy as np
 import pandas as pd
 from .data_loader import load_csco_aliases
 
-# 加载预训练模型
-MODEL_NAME = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-model = SentenceTransformer(MODEL_NAME)
 
-# 预缓存职业别名及其向量（减少重复计算）
-alias_cache = {}
+class CSCO_Matcher:
+    def __init__(self, model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"):
+        self.model_name = model_name
+        self.model = None
+        self.alias_cache = {}
 
+    def load_model(self):
+        """延迟加载 SentenceTransformer，避免启动时加载"""
+        if self.model is None:
+            print(f"Loading model: {self.model_name} ...")
+            self.model = SentenceTransformer(self.model_name)
 
-def encode_texts(texts):
-    """对文本列表进行编码"""
-    return model.encode(texts, convert_to_numpy=True)
+    def encode_texts(self, texts):
+        """对文本列表进行编码"""
+        self.load_model()
+        return self.model.encode(texts, convert_to_numpy=True)
 
+    def find_best_match(self, job_title, top_n=1, version="csco22", threshold=0.5):
+        """单个职业匹配"""
+        self.load_model()
+        df = load_csco_aliases(version)
+        aliases = df["alias"].tolist()
 
-def find_best_match(job_title, top_n=1, version="csco22"):
-    """
-    计算 job_title 与 CSCO 职业别名的余弦相似度，返回最佳匹配结果（使用 SciPy）。
-    """
-    df = load_csco_aliases(version)
-    aliases = df["alias"].tolist()
+        if version not in self.alias_cache:
+            self.alias_cache[version] = self.encode_texts(aliases)
 
-    # 缓存职业别名向量，避免重复计算
-    if version not in alias_cache:
-        alias_cache[version] = encode_texts(aliases)
+        job_embedding = self.encode_texts([job_title])
+        similarity_scores = 1 - cdist(job_embedding, self.alias_cache[version], metric="cosine")[0]
 
-    # 计算输入职业的向量
-    job_embedding = encode_texts([job_title])  # shape (1, dim)
+        valid_indices = np.where(similarity_scores >= threshold)[0]
+        sorted_indices = valid_indices[np.argsort(similarity_scores[valid_indices])[::-1]]
+        if top_n:
+            sorted_indices = sorted_indices[:top_n]
 
-    # 计算余弦相似度 (1 - cosine_distance)
-    similarity_scores = 1 - \
-        cdist(job_embedding, alias_cache[version], metric="cosine")[0]
+        results = [{"csco_code": df.iloc[idx]["csco_code"],
+                    "csco_name": df.iloc[idx]["csco_name"],
+                    "alias": df.iloc[idx]["alias"],
+                    "similarity": similarity_scores[idx]} for idx in sorted_indices]
 
-    # 获取最相似的 top_n 个别名
-    top_indices = np.argsort(similarity_scores)[::-1][:top_n]
+        return results
 
-    results = []
-    for idx in top_indices:
-        results.append({
-            "csco_code": df.iloc[idx]["csco_code"],
-            "csco_name": df.iloc[idx]["csco_name"],
-            "alias": df.iloc[idx]["alias"],
-            "similarity": similarity_scores[idx]
-        })
+    def find_best_matches_batch(self, job_titles, top_n=1, version="csco22", threshold=0.5):
+        """批量匹配多个职业"""
+        self.load_model()
+        df = load_csco_aliases(version)
+        aliases = df["alias"].tolist()
 
-    return results
+        if version not in self.alias_cache:
+            self.alias_cache[version] = self.encode_texts(aliases)
 
+        job_embeddings = self.encode_texts(job_titles)
+        similarity_matrix = 1 - cdist(job_embeddings, self.alias_cache[version], metric="cosine")
 
-# 测试代码
-if __name__ == "__main__":
-    test_job = "软件工程师"
-    matches = find_best_match(test_job, top_n=3)
-    print(matches)
+        results = []
+        for i, job_title in enumerate(job_titles):
+            similarity_scores = similarity_matrix[i]
+            valid_indices = np.where(similarity_scores >= threshold)[0]
+            sorted_indices = valid_indices[np.argsort(similarity_scores[valid_indices])[::-1]]
+            if top_n:
+                sorted_indices = sorted_indices[:top_n]
+
+            job_results = [{"csco_code": df.iloc[idx]["csco_code"],
+                            "csco_name": df.iloc[idx]["csco_name"],
+                            "alias": df.iloc[idx]["alias"],
+                            "similarity": similarity_scores[idx]} for idx in sorted_indices]
+
+            results.append({"job_title": job_title, "matches": job_results})
+
+        return results
