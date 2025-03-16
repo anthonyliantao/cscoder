@@ -16,4 +16,4 @@ alias_df = pd.concat([alias_df, complete_df])
 alias_df = alias_df.drop_duplicates()
 alias_df = alias_df.sort_values(by='csco_code_num')
 
-alias_df.to_csv('test.csv', index=False)
+alias_df.to_csv(alias_file, index=False)
