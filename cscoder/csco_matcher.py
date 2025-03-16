@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 
 from .data_loader import load_csco_aliases
+from .text_cleaner import clean_job_name
+
 
 class CSCOder:
     def __init__(self, model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"):
@@ -33,16 +35,17 @@ class CSCOder:
             }
         return self.alias_cache[version]["df"], self.alias_cache[version]["embeddings"]
 
-    def find_best_match(self, job_title, top_n=1, version="csco22", threshold=0.5):
+    def find_best_match(self, job_name, top_n=1, version="csco22", threshold=0.5):
         """单个职业匹配"""
-        if job_title is None or not job_title or not job_title.strip():
+        if not job_name or not job_name.strip():
             return []
+        
+        job_name = clean_job_name(job_name)
 
         df, alias_embeddings = self.get_alias_embeddings(version)
-        job_embedding = self.encode_texts([job_title])
+        job_embedding = self.encode_texts([job_name])
 
-        similarity_scores = 1 - \
-            cdist(job_embedding, alias_embeddings, metric="cosine")[0]
+        similarity_scores = 1 - cdist(job_embedding, alias_embeddings, metric="cosine")[0]
 
         valid_indices = np.where(similarity_scores >= threshold)[0]
         sorted_indices = valid_indices[np.argsort(
@@ -54,28 +57,30 @@ class CSCOder:
                  "csco_name": df.iloc[idx]["csco_name"],
                  "similarity": similarity_scores[idx]} for idx in sorted_indices]
     
-    def find_best_matches(self, job_titles, top_n=1, version="csco22", threshold=0.5, batch_size=1000, return_df=False):
+    def find_best_matches(self, job_names, top_n=1, version="csco22", threshold=0.5, batch_size=1000, return_df=False):
         """批量职业匹配"""
-        if job_titles is None:
+        if job_names is None:
             return []
         
-        if isinstance(job_titles, str):
-            return self.find_best_match(job_titles, top_n, version, threshold)
+        if isinstance(job_names, str):
+            return self.find_best_match(job_names, top_n, version, threshold)
         
-        if isinstance(job_titles, pd.Series):
-            job_titles = job_titles.astype(str).tolist()
+        if isinstance(job_names, pd.Series):
+            job_names = job_names.astype(str).tolist()
         
-        if not isinstance(job_titles, list):
+        if not isinstance(job_names, list):
             raise ValueError("job_titles 必须是字符串、列表或pd.Series")
         
         alias_df, alias_embeddings = self.get_alias_embeddings(version)
+        
+        job_names = [clean_job_name(job_name) for job_name in job_names]
 
         results = []
-        total_jobs = len(job_titles)
+        total_jobs = len(job_names)
 
         for start in range(0, total_jobs, batch_size):
             end = min(start + batch_size, total_jobs)
-            batch = job_titles[start:end]
+            batch = job_names[start:end]
 
             job_embeddings = self.encode_texts(batch)
             similarity_matrix = 1 - cdist(job_embeddings, alias_embeddings, metric="cosine")
