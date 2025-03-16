@@ -39,8 +39,8 @@
     "input": "投标预算员",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "工程造价专业人员"
+        "csco_code": 2023010,
+        "csco_name": "工程造价工程技术人员"
       }
     ]
   },
@@ -984,8 +984,8 @@
     "input": "换份高薪销售到宏炎地产",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "房产经纪人"
+        "csco_code": 4060201,
+        "csco_name": "房地产经纪人"
       }
     ]
   },
@@ -2622,8 +2622,8 @@
     "input": "易尔富来普招聘钳工",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "钳工"
+        "csco_code": 6200101,
+        "csco_name": "装配钳工"
       }
     ]
   },
@@ -3559,7 +3559,7 @@
     "expected": [
       {
         "csco_code": 0,
-        "csco_name": "管理"
+        "csco_name": null
       }
     ]
   },
@@ -4512,8 +4512,8 @@
     "input": "机械自动化",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "自动控制工程技术人员"
+        "csco_code": 2020707,
+        "csco_name": "自动控制工程技术人员S"
       }
     ]
   },
@@ -5026,7 +5026,7 @@
     "expected": [
       {
         "csco_code": 0,
-        "csco_name": "文员"
+        "csco_name": null
       }
     ]
   },
@@ -11415,8 +11415,8 @@
     "input": "爆单啦/急招配送员/有现金补贴",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "配音"
+        "csco_code": 4100801,
+        "csco_name": "网约配送员"
       }
     ]
   },
@@ -14412,8 +14412,8 @@
     "input": "电信外呼客服/宜宾",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "呼叫中心服务员 "
+        "csco_code": 4040503,
+        "csco_name": "呼叫中心服务员"
       }
     ]
   },
@@ -15600,8 +15600,8 @@
     "input": "电气/自动化工程师",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "自动控制工程技术人员"
+        "csco_code": 2020707,
+        "csco_name": "自动控制工程技术人员S"
       }
     ]
   },
@@ -17193,8 +17193,8 @@
     "input": "直播中控直播运营",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -17211,8 +17211,8 @@
     "input": "直播助理/地铁口近/入职培训/气氛好",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -17229,8 +17229,8 @@
     "input": "直播场控运营",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -17238,8 +17238,8 @@
     "input": "直播带货运营",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -17265,8 +17265,8 @@
     "input": "直播电商运营",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -17283,8 +17283,8 @@
     "input": "直播运营",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -17292,8 +17292,8 @@
     "input": "直播运营 7-12K",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -17301,8 +17301,8 @@
     "input": "直播运营专员",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -17310,8 +17310,8 @@
     "input": "直播运营主管",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -17319,8 +17319,8 @@
     "input": "直播运营助理",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -17328,8 +17328,8 @@
     "input": "直播运营经理",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -24600,8 +24600,8 @@
     "input": "自动化工程师",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "自动控制工程技术人员"
+        "csco_code": 2020707,
+        "csco_name": "自动控制工程技术人员S"
       }
     ]
   },
@@ -24609,8 +24609,8 @@
     "input": "自动化机构设计工程师（可实习）",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "自动控制工程技术人员"
+        "csco_code": 2020707,
+        "csco_name": "自动控制工程技术人员S"
       }
     ]
   },
@@ -24618,8 +24618,8 @@
     "input": "自动化机械设计师",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "自动控制工程技术人员"
+        "csco_code": 2020707,
+        "csco_name": "自动控制工程技术人员S"
       }
     ]
   },
@@ -24627,8 +24627,8 @@
     "input": "自动化电气工程师",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "自动控制工程技术人员"
+        "csco_code": 2020707,
+        "csco_name": "自动控制工程技术人员S"
       }
     ]
   },
@@ -24636,8 +24636,8 @@
     "input": "自动化经理",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "自动控制工程技术人员"
+        "csco_code": 2020707,
+        "csco_name": "自动控制工程技术人员S"
       }
     ]
   },
@@ -24645,8 +24645,8 @@
     "input": "自动化设备工程师",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "自动控制工程技术人员"
+        "csco_code": 2020707,
+        "csco_name": "自动控制工程技术人员S"
       }
     ]
   },
@@ -24663,8 +24663,8 @@
     "input": "自动化调试技术员",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "自动控制工程技术人员"
+        "csco_code": 2020707,
+        "csco_name": "自动控制工程技术人员S"
       }
     ]
   },
@@ -29208,8 +29208,8 @@
     "input": "诚聘假发带货主播",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -31683,8 +31683,8 @@
     "input": "资深模拟电路工程师（博士、硕士优先）",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "集成电路工程技术人员"
+        "csco_code": 2023809,
+        "csco_name": "集成电路工程技术人员S"
       }
     ]
   },
@@ -33339,8 +33339,8 @@
     "input": "轻高定设计师",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "服装设计师"
+        "csco_code": 2090602,
+        "csco_name": "服装设计人员"
       }
     ]
   },
@@ -37155,8 +37155,8 @@
     "input": "链家人才干部+保障性薪资8000+优雅的办公环境",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "房产经纪人"
+        "csco_code": 4060201,
+        "csco_name": "房地产经纪人"
       }
     ]
   },
@@ -37164,8 +37164,8 @@
     "input": "链家总部招聘 储备店经理 应届毕业生 底薪6k—10k",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "房产经纪人"
+        "csco_code": 4060201,
+        "csco_name": "房地产经纪人"
       }
     ]
   },
@@ -37173,17 +37173,17 @@
     "input": "链家招聘+五险一金挑战高薪",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "房产经纪人"
+        "csco_code": 4060201,
+        "csco_name": "房地产经纪人"
       }
-    ]
+   ]
   },
   {
     "input": "链家经纪人/晋升透明/无责底薪6K",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "房产经纪人"
+        "csco_code": 4060201,
+        "csco_name": "房地产经纪人"
       }
     ]
   },
@@ -39162,8 +39162,8 @@
     "input": "非标自动化机械工程师",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "自动控制工程技术人员"
+        "csco_code": 2020707,
+        "csco_name": "自动控制工程技术人员S"
       }
     ]
   },
@@ -39684,8 +39684,8 @@
     "input": "项目工程师—工业自动化设备认证",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "自动控制工程技术人员"
+        "csco_code": 2020707,
+        "csco_name": "自动控制工程技术人员S"
       }
     ]
   },
@@ -42969,8 +42969,8 @@
     "input": "高级电气工程师（渔光物联）",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "物联网工程技术人员 S"
+        "csco_code": 2023802,
+        "csco_name": "物联网工程技术人员S"
       }
     ]
   },
@@ -43446,8 +43446,8 @@
     "input": "高考志愿填报主播",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -44067,8 +44067,8 @@
     "input": "高薪，不坐班带货主播",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "互联网营销师s"
+        "csco_code": 4010602,
+        "csco_name": "互联网营销师S"
       }
     ]
   },
@@ -44517,8 +44517,8 @@
     "input": "龙湖九里晴川租售中心/房产销售",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "房产经纪人"
+        "csco_code": 4060201,
+        "csco_name": "房地产经纪人"
       }
     ]
   },
@@ -45201,8 +45201,8 @@
     "input": "支付风控算法工程师-国际化",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "计算机与应用工程技术人员"
+        "csco_code": 2021007,
+        "csco_name": "信息安全工程技术人员S"
       }
     ]
   },
@@ -45705,8 +45705,8 @@
     "input": "数字IC验证工程师",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "集成电路工程技术人员"
+        "csco_code": 2023809,
+        "csco_name": "集成电路工程技术人员S"
       }
     ]
   },
@@ -45714,8 +45714,8 @@
     "input": "数字ic设计（soc/ip）",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "集成电路工程技术人员"
+        "csco_code": 2023809,
+        "csco_name": "集成电路工程技术人员S"
       }
     ]
   },
@@ -45732,8 +45732,8 @@
     "input": "数字化采购经理",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "采购人员"
+        "csco_code": 4010100,
+        "csco_name": "采购员"
       }
     ]
   },
@@ -45750,8 +45750,8 @@
     "input": "数字多媒体设计总监",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "采购人员"
+        "csco_code": 4010100,
+        "csco_name": "采购员"
       }
     ]
   },
@@ -46551,8 +46551,8 @@
     "input": "新品导入工程师（NPI工程师）",
     "expected": [
       {
-        "csco_code": 0,
-        "csco_name": "集成电路工程技术人员"
+        "csco_code": 2023809,
+        "csco_name": "集成电路工程技术人员S"
       }
     ]
   },
@@ -52717,7 +52717,7 @@
     "expected": [
       {
         "csco_code": 0,
-        "csco_name": "设备副厂长（炼钢）"
+        "csco_name": null
       }
     ]
   },
