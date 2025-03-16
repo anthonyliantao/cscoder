@@ -36,8 +36,9 @@ class CSCOder:
         """单个职业匹配"""
         df, alias_embeddings = self.get_alias_embeddings(version)
         job_embedding = self.encode_texts([job_title])
-        
-        similarity_scores = 1 - cdist(job_embedding, alias_embeddings, metric="cosine")[0]
+
+        similarity_scores = 1 - \
+            cdist(job_embedding, alias_embeddings, metric="cosine")[0]
 
         valid_indices = np.where(similarity_scores >= threshold)[0]
         sorted_indices = valid_indices[np.argsort(
@@ -50,13 +51,13 @@ class CSCOder:
                  "alias": df.iloc[idx]["alias"],
                  "similarity": similarity_scores[idx]} for idx in sorted_indices]
 
-
     def find_best_matches_batch(self, job_titles, top_n=1, version="csco22", threshold=0.5):
         """匹配多个职业"""
         df, alias_embeddings = self.get_alias_embeddings(version)
         job_embeddings = self.encode_texts(job_titles)
-        
-        similarity_matrix = 1 - cdist(job_embeddings, alias_embeddings, metric="cosine")
+
+        similarity_matrix = 1 - \
+            cdist(job_embeddings, alias_embeddings, metric="cosine")
 
         results = []
         for i, job_title in enumerate(job_titles):
