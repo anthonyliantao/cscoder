@@ -63,12 +63,12 @@ class CSCOder:
             return self.find_best_match(job_titles, top_n, version, threshold)
         
         if isinstance(job_titles, pd.Series):
-            job_titles = job_titles.tolist()
+            job_titles = job_titles.astype(str).tolist()
         
         if not isinstance(job_titles, list):
             raise ValueError("job_titles 必须是字符串、列表或pd.Series")
         
-        df, alias_embeddings = self.get_alias_embeddings(version)
+        alias_df, alias_embeddings = self.get_alias_embeddings(version)
 
         results = []
         total_jobs = len(job_titles)
@@ -88,8 +88,8 @@ class CSCOder:
                     sorted_indices = sorted_indices[:top_n]
 
                 match_results = [{"job_title": job_title,
-                                  "csco_code": df.iloc[idx]["csco_code"],
-                                  "csco_name": df.iloc[idx]["csco_name"],
+                                  "csco_code": alias_df.iloc[idx]["csco_code"],
+                                  "csco_name": alias_df.iloc[idx]["csco_name"],
                                   "similarity": similarity_scores[idx]} for idx in sorted_indices]
 
                 results.extend(match_results)
