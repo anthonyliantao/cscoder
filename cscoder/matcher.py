@@ -1,11 +1,10 @@
 from sentence_transformers import SentenceTransformer
 from scipy.spatial.distance import cdist
 import numpy as np
-import pandas as pd
 from .data_loader import load_csco_aliases
 
 
-class CSCO_Matcher:
+class CSCOder:
     def __init__(self, model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"):
         self.model_name = model_name
         self.model = None
