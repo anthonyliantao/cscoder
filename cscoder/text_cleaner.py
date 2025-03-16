@@ -13,9 +13,8 @@ def load_geo_ents(geo_file='data/cncity.xlsx'):
 GEO_ENTS = load_geo_ents()
 
 # 加载停止词
-STOPWORDS = set(open("data/stopwords.txt",
-                encoding="utf-8").read().splitlines())
-
+with open("data/stopwords.txt", "r", encoding="utf-8") as f:
+    STOPWORDS = {line.strip() for line in f if line.strip()}
 
 def remove_puncs(text):
     """移除标点符号"""
@@ -25,7 +24,7 @@ def remove_puncs(text):
 def remove_dynamic_stopwords(text):
     """移除动态的停止词，如上X休X、早X晚X、月入X等"""
     pattern = re.compile(
-        r'(提供|\+|有|包|管)[吃住社保饭补餐补免费住宿宿舍分红带薪培训法休师傅带教]+|'  # 提供/+/有 + 福利
+        r'(提供|\+|有|包|管)[吃住社保饭补餐补免费住宿宿舍分红带薪培训法休师傅带教五险一金]+|'  # 提供/+/有 + 福利
         r'(接受)?[小白无经验生熟手]+[均皆都]?可|'  # 接受小白、生熟手均可等
         r'月(入|入过|均过)?\d+[kK千万起]?|'  # 月入X、月过X等
         r'(薪资|待遇)面议|'  # X面议
@@ -45,7 +44,7 @@ def remove_dynamic_stopwords(text):
 
 def remove_stopwords_from_file(text):
     """读取停止词文件中规定的停止词"""
-    pattern = re.compile(r'\b(' + '|'.join(map(re.escape, STOPWORDS)) + r')\b')
+    pattern = re.compile('|'.join(map(re.escape, STOPWORDS)))
     return pattern.sub("", text)
 
 
@@ -56,9 +55,17 @@ def remove_recruitment_verb(text):
 
 
 def remove_codelike_words(text):
-    """移除字母开头+数字的编码（如 J10050），但保留 3D、UE4 等有实际意义的白名单"""
-    whitelist = {"3d", "ue4", "b2"}
-    return re.sub(r'\b[a-zA-Z]+\d+\b', lambda m: m.group() if m.group().lower() in whitelist else "", text)
+    """
+    移除字母开头 + 数字的部分（如 J10050），但保留白名单中的词（如 3D、UE4）。
+    """
+    whitelist = {"3d", "ue4", "a1", "a2",  "b1", "b2", "c1", "c2"}
+    pattern = re.compile(r'([a-zA-Z]+)(\d+)([a-zA-Z]?)+')
+
+    def replace_match(match):
+        word = match.group(0)  # 获取整个匹配项
+        return "" if word.lower() not in whitelist else word  # 保留白名单词
+    
+    return pattern.sub(replace_match, text)
 
 
 def remove_geo_ents(text):
