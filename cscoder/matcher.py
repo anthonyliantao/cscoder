@@ -34,6 +34,9 @@ class CSCOder:
 
     def find_best_match(self, job_title, top_n=1, version="csco22", threshold=0.5):
         """单个职业匹配"""
+        if not job_title or not job_title.strip():
+            return []  # 空字符串直接返回空列表 
+            
         df, alias_embeddings = self.get_alias_embeddings(version)
         job_embedding = self.encode_texts([job_title])
 
