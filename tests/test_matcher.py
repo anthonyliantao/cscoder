@@ -21,23 +21,23 @@ def matcher():
     return CSCOder()
 
 
-# @pytest.mark.parametrize("job_title, expected_name", TEST_DATA)
-# def test_find_best_match(matcher, job_title, expected_name):
-#     """测试 find_best_match 是否能正确匹配职业名称"""
-#     matches = matcher.find_best_match(job_title, version="csco22")
+@pytest.mark.parametrize("job_title, expected_name", [TEST_DATA[0]])
+def test_find_best_match(matcher, job_title, expected_name):
+    """测试 find_best_match 是否能正确匹配职业名称"""
+    matches = matcher.find_best_match(job_title, version="csco22")
 
-#     assert matches, f"❌ {job_title} 未找到匹配结果！"
+    assert matches, f"❌ {job_title} 未找到匹配结果！"
 
-#     best_match = matches[0]
-#     matched_name = best_match["csco_name"]
+    best_match = matches[0]
+    matched_name = best_match["csco_name"]
 
-#     assert matched_name == expected_name, (
-#         f"❌ {job_title} 预期匹配 {expected_name}，但匹配到 {matched_name}"
-#     )
+    assert matched_name == expected_name, (
+        f"❌ {job_title} 预期匹配 {expected_name}，但匹配到 {matched_name}"
+    )
 
 
 def test_find_best_match_invalid_input(matcher):
     """测试 find_best_match 处理 None 或空字符串"""
-    assert matcher.find_best_match("") == [], "❌ 空字符串应该返回空列表！"
-    assert matcher.find_best_match(None) == [], "❌ None 应该返回空列表！"
-    assert matcher.find_best_match("   ") == [], "❌ 纯空格字符串应该返回空列表！"
+    assert matcher.find_best_match("") == [], "❌ 空字符串应该返回空列表"
+    assert matcher.find_best_match(None) == [], "❌ None 应该返回空列表"
+    assert matcher.find_best_match("   ") == [], "❌ 纯空格字符串应该返回空列表"

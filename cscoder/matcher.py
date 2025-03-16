@@ -35,8 +35,8 @@ class CSCOder:
     def find_best_match(self, job_title, top_n=1, version="csco22", threshold=0.5):
         """单个职业匹配"""
         if not job_title or not job_title.strip():
-            return []  # 空字符串直接返回空列表 
-            
+            return []
+
         df, alias_embeddings = self.get_alias_embeddings(version)
         job_embedding = self.encode_texts([job_title])
 
@@ -51,10 +51,9 @@ class CSCOder:
 
         return [{"csco_code": df.iloc[idx]["csco_code"],
                  "csco_name": df.iloc[idx]["csco_name"],
-                 "alias": df.iloc[idx]["alias"],
                  "similarity": similarity_scores[idx]} for idx in sorted_indices]
 
-    def find_best_matches_batch(self, job_titles, top_n=1, version="csco22", threshold=0.5):
+    def find_best_matches(self, job_titles, top_n=1, version="csco22", threshold=0.5):
         """匹配多个职业"""
         df, alias_embeddings = self.get_alias_embeddings(version)
         job_embeddings = self.encode_texts(job_titles)
