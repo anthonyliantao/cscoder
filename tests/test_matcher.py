@@ -3,7 +3,7 @@ import pandas as pd
 from unittest.mock import patch
 import numpy as np
 
-from cscoder.matcher import CSCOder
+from cscoder.csco_matcher import CSCOder
 
 
 @pytest.fixture

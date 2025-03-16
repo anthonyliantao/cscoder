@@ -2,8 +2,8 @@ from sentence_transformers import SentenceTransformer
 from scipy.spatial.distance import cdist
 import pandas as pd
 import numpy as np
-from .data_loader import load_csco_aliases
 
+from .data_loader import load_csco_aliases
 
 class CSCOder:
     def __init__(self, model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"):
