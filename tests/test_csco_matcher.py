@@ -2,10 +2,10 @@ import json
 import pytest
 import os
 import pandas as pd
-from csco_matcher.csco_matcher import CSCOder
+from cscoder.csco_matcher import CSCOder
 
 # 定义测试数据路径
-TEST_DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "test_cases.json")
+TEST_DATA_PATH = "tests/data/testcases.json"
 
 # 读取测试数据
 @pytest.fixture(scope="module")
@@ -26,6 +26,9 @@ def test_matching_accuracy(matcher, test_cases):
 
     # 获取匹配结果，输出格式为 DataFrame
     results_df = matcher.find_best_matches(job_series, top_n=1, batch_size=10, return_df=True)
+    
+    # 输出匹配结果
+    results_df.to_csv("test_results.csv", index=False)
 
     # 计算准确率
     matched_count = sum(
