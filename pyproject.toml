@@ -9,7 +9,16 @@ description = "A Python package for matching unstructure job titles with China S
 authors = [{name = "Antao Li", email = "anthony.li.antao@outlook.com"}]
 readme = "README.md"
 license = {text = "MIT"}
-dependencies = ["sentence-transformers"]
+dependencies = [
+    "sentence-transformers",
+    "scipy",
+    "numpy",
+    "pytest"
+]
+
+[tool.setuptools.packages.find]
+include = ["cscoder", "cscoder.*"]
+
 
 [project.urls]
 "Homepage" = "https://github.com/anthonyliantao/cscoder"
