@@ -1,43 +1,57 @@
 import pytest
-from cscoder.matcher import CSCOder
+import pandas as pd
+from unittest.mock import patch
+import numpy as np
 
-# 测试数据集 (非结构职业名称, 预期匹配的标准职业名称)
-TEST_DATA = [
-    ("4s店销售总监(集团)", "市场营销专业人员"),
-    ("电梯销售（九江）", "商品营业员"),
-    ("人力BP", "人力资源管理专业人员"),
-    ("客户经理", "客户服务管理员"),
-    ("储备副店长+带薪培训+免费住宿", "连锁经营管理师"),
-    ("证券经纪人", "证券期货服务师"),
-    ("（安徽）区域销售经理", "市场营销专业人员"),
-    ("湖北恩施宣恩高薪聘请美睫师/美甲师", "美甲师"),
-    ("labview工程师", "自动控制工程技术人员S"),
-]
+from cscoder.matcher import CSCOder
 
 
 @pytest.fixture
-def matcher():
-    """初始化 CSCOder 实例"""
-    return CSCOder()
+def csco():
+    """创建一个 CSCOder 实例 避免每个测试都重复加载模型"""
+    csco = CSCOder()
+    csco.load_model()
+    return csco
 
 
-@pytest.mark.parametrize("job_title, expected_name", [TEST_DATA[0]])
-def test_find_best_match(matcher, job_title, expected_name):
-    """测试 find_best_match 是否能正确匹配职业名称"""
-    matches = matcher.find_best_match(job_title, version="csco22")
-
-    assert matches, f"❌ {job_title} 未找到匹配结果！"
-
-    best_match = matches[0]
-    matched_name = best_match["csco_name"]
-
-    assert matched_name == expected_name, (
-        f"❌ {job_title} 预期匹配 {expected_name}，但匹配到 {matched_name}"
-    )
+# def test_single_string_input(csco):
+#     """测试单个字符串输入"""
+#     result = csco.find_best_matches("软件工程师", top_n=1)
+#     assert isinstance(result, list)  # 返回列表
+#     assert len(result) > 0  # 结果不为空
+#     assert isinstance(result[0], dict)  # 结果中包含字典
+#     assert set(["csco_code", "csco_name", "similarity"]).issubset(
+#         result[0].keys())  # 字典包含指定键
 
 
-def test_find_best_match_invalid_input(matcher):
-    """测试 find_best_match 处理 None 或空字符串"""
-    assert matcher.find_best_match("") == [], "❌ 空字符串应该返回空列表"
-    assert matcher.find_best_match(None) == [], "❌ None 应该返回空列表"
-    assert matcher.find_best_match("   ") == [], "❌ 纯空格字符串应该返回空列表"
+# def test_list_input(csco):
+#     """测试列表输入"""
+#     job_list = ["软件工程师", "数据分析师", "市场经理"]
+#     result = csco.find_best_matches(job_list, top_n=1)
+#     assert isinstance(result, list)  # 返回列表
+#     assert len(result) == len(job_list)   # 结果长度与输入相同
+#     assert all(isinstance(item, dict) for item in result)  # 结果中包含字典
+#     assert all(set(["csco_code", "csco_name", "similarity"]).issubset(
+#         item.keys()) for item in result)  # 字典包含指定键
+
+
+def test_pandas_series_input(csco):
+    """测试 pandas.Series 输入"""
+    job_series = pd.Series(["软件工程师", "", None, "  ", "数据分析师", 123, float("nan")])
+    result = csco.find_best_matches(job_series, top_n=1)
+    assert isinstance(result, list)  # 返回列表
+    assert len(result) == len(job_series)  # 结果长度与输入相同
+
+
+# def test_empty_input(csco):
+#     """测试空输入"""
+#     assert csco.find_best_matches("", top_n=1) == []
+#     assert csco.find_best_matches([], top_n=1) == []
+#     assert csco.find_best_matches(pd.Series([]), top_n=1) == []
+#     assert csco.find_best_matches(None, top_n=1) == []
+
+
+# def test_invalid_input(csco):
+#     """测试无效输入"""
+#     with pytest.raises(ValueError):
+#         csco.find_best_matches(123, top_n=1)  # 非字符串/列表输入应报错

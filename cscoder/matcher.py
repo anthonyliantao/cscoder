@@ -1,5 +1,6 @@
 from sentence_transformers import SentenceTransformer
 from scipy.spatial.distance import cdist
+import pandas as pd
 import numpy as np
 from .data_loader import load_csco_aliases
 
@@ -34,7 +35,7 @@ class CSCOder:
 
     def find_best_match(self, job_title, top_n=1, version="csco22", threshold=0.5):
         """单个职业匹配"""
-        if not job_title or not job_title.strip():
+        if job_title is None or not job_title or not job_title.strip():
             return []
 
         df, alias_embeddings = self.get_alias_embeddings(version)
@@ -52,29 +53,48 @@ class CSCOder:
         return [{"csco_code": df.iloc[idx]["csco_code"],
                  "csco_name": df.iloc[idx]["csco_name"],
                  "similarity": similarity_scores[idx]} for idx in sorted_indices]
-
-    def find_best_matches(self, job_titles, top_n=1, version="csco22", threshold=0.5):
-        """匹配多个职业"""
+    
+    def find_best_matches(self, job_titles, top_n=1, version="csco22", threshold=0.5, batch_size=1000, return_df=False):
+        """批量职业匹配"""
+        if job_titles is None:
+            return []
+        
+        if isinstance(job_titles, str):
+            return self.find_best_match(job_titles, top_n, version, threshold)
+        
+        if isinstance(job_titles, pd.Series):
+            job_titles = job_titles.tolist()
+        
+        if not isinstance(job_titles, list):
+            raise ValueError("job_titles 必须是字符串、列表或pd.Series")
+        
         df, alias_embeddings = self.get_alias_embeddings(version)
-        job_embeddings = self.encode_texts(job_titles)
-
-        similarity_matrix = 1 - \
-            cdist(job_embeddings, alias_embeddings, metric="cosine")
 
         results = []
-        for i, job_title in enumerate(job_titles):
-            similarity_scores = similarity_matrix[i]
-            valid_indices = np.where(similarity_scores >= threshold)[0]
-            sorted_indices = valid_indices[np.argsort(
-                similarity_scores[valid_indices])[::-1]]
-            if top_n:
-                sorted_indices = sorted_indices[:top_n]
+        total_jobs = len(job_titles)
 
-            job_results = [{"csco_code": df.iloc[idx]["csco_code"],
-                            "csco_name": df.iloc[idx]["csco_name"],
-                            "alias": df.iloc[idx]["alias"],
-                            "similarity": similarity_scores[idx]} for idx in sorted_indices]
+        for start in range(0, total_jobs, batch_size):
+            end = min(start + batch_size, total_jobs)
+            batch = job_titles[start:end]
 
-            results.append({"job_title": job_title, "matches": job_results})
+            job_embeddings = self.encode_texts(batch)
+            similarity_matrix = 1 - cdist(job_embeddings, alias_embeddings, metric="cosine")
+
+            for i, job_title in enumerate(batch):
+                similarity_scores = similarity_matrix[i]
+                valid_indices = np.where(similarity_scores >= threshold)[0]
+                sorted_indices = valid_indices[np.argsort(similarity_scores[valid_indices])[::-1]]
+                if top_n:
+                    sorted_indices = sorted_indices[:top_n]
+
+                match_results = [{"job_title": job_title,
+                                  "csco_code": df.iloc[idx]["csco_code"],
+                                  "csco_name": df.iloc[idx]["csco_name"],
+                                  "similarity": similarity_scores[idx]} for idx in sorted_indices]
+
+                results.extend(match_results)
+
+        if return_df:
+            return pd.DataFrame(results)
 
         return results
