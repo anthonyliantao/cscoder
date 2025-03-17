@@ -1,14 +1,11 @@
 from sentence_transformers import SentenceTransformer
 from scipy.spatial.distance import cdist
-import os
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
 
+from .data_loader import load_csco, load_aliases
 from .text_cleaner import clean_job_name
-
-
-DATA_DIR = os.path.join(os.path.dirname(__file__), "../data")
 
 
 class CSCOder:
@@ -31,8 +28,7 @@ class CSCOder:
     def csco_data(self):
         """加载 CSCO 数据"""
         if self._csco_data is None:
-            file_path = os.path.join(DATA_DIR, f"{self.version}.csv")
-            df = pd.read_csv(file_path, usecols=["code_num", "name"], dtype={"code_num": str})
+            df = load_csco(self.version)
             self._csco_data = df.set_index("code_num")["name"].to_dict()
         return self._csco_data
 
@@ -40,27 +36,19 @@ class CSCOder:
     def alias_data(self):
         """加载职业别名数据"""
         if self._alias_data is None:
-            file_path = os.path.join(DATA_DIR, f"{self.version}_aliases.csv")
-            df = pd.read_csv(file_path, usecols=["alias", "csco_code_num"])
-
-            df["alias"] = df["alias"].str.strip().str.lower()
-            df = df.drop_duplicates(subset=["alias"])
-
-            embeddings = self._encode_texts(
-                df["alias"].tolist(), show_progress_bar=True)
-
+            df = load_aliases(self.version)
+            embeddings = self._encode_texts(df["alias"].tolist(), show_progress_bar=True)
             self._alias_data = (df, embeddings)
-
         return self._alias_data
 
     @property
     def alias_df(self):
-        """别名数据"""
+        """职业别名数据"""
         return self.alias_data[0]
 
     @property
     def alias_embeddings(self):
-        """别名的向量表示"""
+        """职业别名向量表示"""
         return self.alias_data[1]
 
     def _encode_texts(self, texts, *args, **kwargs):
@@ -92,18 +80,18 @@ class CSCOder:
         return results
 
     def _check_code_for_similarity(self, csco_code, sim_score):
-        """根据相似度返回对应层次的代码"""
+        """根据相似度返回对应层级的代码"""
         csco_code = str(csco_code)
         if sim_score >= 0.9:
-            return csco_code                    # 7位代码
+            return csco_code                     # 7位代码
         elif sim_score >= 0.7:
             return csco_code[:5] + "00"          # 5位代码
         elif sim_score >= 0.5:
-            return csco_code[:3] + "0000"  # 3位代码
+            return csco_code[:3] + "0000"        # 3位代码
         elif sim_score >= 0.3:
-            return csco_code[:3] + "0000"    # 1位代码
+            return csco_code[:3] + "0000"        # 1位代码
         else:
-           return None                     # 低于 0.3，不匹配
+           return None                           # 低于 0.3，不匹配
 
     def find_best_match(self, job_name, top_n=1, return_df=True):
         """匹配单个职业"""
