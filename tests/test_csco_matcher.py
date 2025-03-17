@@ -1,6 +1,5 @@
 import json
 import pytest
-import os
 import pandas as pd
 from cscoder.csco_matcher import CSCOder
 
