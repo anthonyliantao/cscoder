@@ -4,13 +4,16 @@ import pandas as pd
 from cscoder.csco_matcher import CSCOder
 
 # 定义测试数据路径
-TEST_DATA_PATH = "tests/data/testcases.json"
+TEST_DATA_PATH = "data/testcases.xlsx"
+OUTPUT_DATA_PATH = "data/testcases_result.csv"
 
 # 读取测试数据
 @pytest.fixture(scope="module")
 def test_cases():
-    with open(TEST_DATA_PATH, "r", encoding="utf-8") as f:
-        return json.load(f)
+    test_df = pd.read_excel(TEST_DATA_PATH)
+    test_df['expected_code'] = test_df['expected_code'].str.replace('-', '')
+    test_df.dropna(subset=['expected_code'])
+    return test_df
 
 @pytest.fixture(scope="module")
 def matcher():
@@ -18,25 +21,17 @@ def matcher():
     return CSCOder()
 
 def test_matching_accuracy(matcher, test_cases):
-    """测试匹配的准确率是否达到90%"""
-    # 将测试输入转换为 pd.Series
-    job_series = pd.Series([case["input"] for case in test_cases])
-    expected_results = {case["input"]: case["expected"][0]["csco_code"] for case in test_cases}
-
-    # 获取匹配结果，输出格式为 DataFrame
-    results_df = matcher.find_best_matches(job_series, top_n=1, batch_size=10, return_df=True)
+    """测试匹配的准确率"""
+    # 匹配职业名称列
+    results_df = matcher.find_best_matches(test_cases['job_name'], top_n=1, batch_size=10, return_df=True)
     
-    # 添加预期匹配结果到 DataFrame
-    results_df["expected_csco_code"] = results_df["input"].map(expected_results)
-    
-    # 统一匹配结果和预期结果的格式
-    results_df["csco_code"] = results_df["csco_code"].str.replace("-", "").astype(int)
-    results_df["expected_csco_code"] = results_df["expected_csco_code"].fillna(0).astype(int)
+    # 添加预期结果列
+    results_df = pd.concat([results_df, test_cases[['expected_code', 'expected_name']]], axis=1)
     
     # 输出匹配结果 方便调试
-    results_df.to_csv("test_results.csv", index=False)
+    results_df.to_csv(OUTPUT_DATA_PATH, index=False)
     
-    matched_count = sum(results_df["csco_code"] == results_df["expected_csco_code"])
+    matched_count = sum(results_df["csco_code"] == results_df["expected_code"])
     accuracy = matched_count / len(test_cases)
     
     print(f"匹配准确率: {accuracy:.2%}")
