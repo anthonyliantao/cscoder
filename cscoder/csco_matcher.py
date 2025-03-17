@@ -92,7 +92,7 @@ class CSCOder:
                 if top_n:
                     sorted_indices = sorted_indices[:top_n]
 
-                match_results = [{"job_title": job_title,
+                match_results = [{"input": job_title,
                                   "csco_code": alias_df.iloc[idx]["csco_code"],
                                   "csco_name": alias_df.iloc[idx]["csco_name"],
                                   "similarity": similarity_scores[idx]} for idx in sorted_indices]
