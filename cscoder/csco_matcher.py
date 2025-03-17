@@ -2,6 +2,7 @@ from sentence_transformers import SentenceTransformer
 from scipy.spatial.distance import cdist
 import pandas as pd
 import numpy as np
+from rich.progress import Progress
 
 from .data_loader import load_csco_aliases
 from .text_cleaner import clean_job_name
@@ -57,7 +58,7 @@ class CSCOder:
                  "csco_name": df.iloc[idx]["csco_name"],
                  "similarity": similarity_scores[idx]} for idx in sorted_indices]
     
-    def find_best_matches(self, job_names, top_n=1, version="csco22", threshold=0.5, batch_size=1000, return_df=False):
+    def find_best_matches(self, job_names, top_n=1, version="csco22", threshold=0.5, batch_size=1000, return_df=True, show_progress=True):
         """批量职业匹配"""
         if job_names is None:
             return []
@@ -77,27 +78,33 @@ class CSCOder:
 
         results = []
         total_jobs = len(job_names)
+        
+        with Progress() as progress:
+            task = progress.add_task("[cyan]Matching job names...", total=total_jobs) if show_progress else None
 
-        for start in range(0, total_jobs, batch_size):
-            end = min(start + batch_size, total_jobs)
-            batch = job_names[start:end]
+            for start in range(0, total_jobs, batch_size):
+                end = min(start + batch_size, total_jobs)
+                batch = job_names[start:end]
 
-            job_embeddings = self.encode_texts(batch)
-            similarity_matrix = 1 - cdist(job_embeddings, alias_embeddings, metric="cosine")
+                job_embeddings = self.encode_texts(batch)
+                similarity_matrix = 1 - cdist(job_embeddings, alias_embeddings, metric="cosine")
 
-            for i, job_title in enumerate(batch):
-                similarity_scores = similarity_matrix[i]
-                valid_indices = np.where(similarity_scores >= threshold)[0]
-                sorted_indices = valid_indices[np.argsort(similarity_scores[valid_indices])[::-1]]
-                if top_n:
-                    sorted_indices = sorted_indices[:top_n]
+                for i, job_title in enumerate(batch):
+                    similarity_scores = similarity_matrix[i]
+                    valid_indices = np.where(similarity_scores >= threshold)[0]
+                    sorted_indices = valid_indices[np.argsort(similarity_scores[valid_indices])[::-1]]
+                    if top_n:
+                        sorted_indices = sorted_indices[:top_n]
 
-                match_results = [{"input": job_title,
-                                  "csco_code": alias_df.iloc[idx]["csco_code"],
-                                  "csco_name": alias_df.iloc[idx]["csco_name"],
-                                  "similarity": similarity_scores[idx]} for idx in sorted_indices]
+                    match_results = [{"input": job_title,
+                                    "csco_code": alias_df.iloc[idx]["csco_code"],
+                                    "csco_name": alias_df.iloc[idx]["csco_name"],
+                                    "similarity": similarity_scores[idx]} for idx in sorted_indices]
 
-                results.extend(match_results)
+                    results.extend(match_results)
+                    
+                    if show_progress:
+                        progress.update(task, advance=1)
 
         if return_df:
             return pd.DataFrame(results)
