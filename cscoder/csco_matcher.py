@@ -2,14 +2,15 @@ from sentence_transformers import SentenceTransformer
 from scipy.spatial.distance import cdist
 import pandas as pd
 import numpy as np
-from rich.progress import Progress
+from tqdm import tqdm
+from math import ceil
 
 from .data_loader import load_csco_aliases
 from .text_cleaner import clean_job_name
 
 
 class CSCOder:
-    def __init__(self, model_name="sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"):
+    def __init__(self, model_name="paraphrase-multilingual-MiniLM-L12-v2"):
         self.model_name = model_name
         self.model = None
         self.alias_cache = {}
@@ -20,10 +21,10 @@ class CSCOder:
             print(f"Loading model: {self.model_name} ...")
             self.model = SentenceTransformer(self.model_name)
 
-    def encode_texts(self, texts):
+    def encode_texts(self, texts, *args, **kwargs):
         """对文本列表进行编码"""
         self.load_model()
-        return np.array(self.model.encode(texts, convert_to_numpy=True))
+        return np.array(self.model.encode(texts, convert_to_numpy=True, *args, **kwargs))
 
     def get_alias_embeddings(self, version):
         """获取 CSCO 版本对应的职业别名编码"""
@@ -32,12 +33,12 @@ class CSCOder:
             aliases = df["alias"].tolist()
             self.alias_cache[version] = {
                 "df": df,  # 直接存 DataFrame，减少多次读取 CSV
-                "embeddings": self.encode_texts(aliases)
+                "embeddings": self.encode_texts(aliases, show_progress_bar=True)
             }
         return self.alias_cache[version]["df"], self.alias_cache[version]["embeddings"]
 
     def find_best_match(self, job_name, top_n=1, version="csco22", threshold=0.5):
-        """单个职业匹配"""
+        """匹配单个职业"""
         if not job_name or not job_name.strip():
             return []
         
@@ -59,7 +60,7 @@ class CSCOder:
                  "similarity": similarity_scores[idx]} for idx in sorted_indices]
     
     def find_best_matches(self, job_names, top_n=1, version="csco22", threshold=0.5, batch_size=1000, return_df=True, show_progress=True):
-        """批量职业匹配"""
+        """匹配多个职业"""
         if job_names is None:
             return []
         
@@ -76,16 +77,13 @@ class CSCOder:
         
         job_names = [clean_job_name(job_name) for job_name in job_names]
 
-        results = []
         total_jobs = len(job_names)
+        num_batches = total_jobs / batch_size
+        batches = [job_names[i: i + batch_size] for i in range(0, total_jobs, batch_size)]
         
-        with Progress() as progress:
-            task = progress.add_task("[cyan]Matching job names...", total=total_jobs) if show_progress else None
-
-            for start in range(0, total_jobs, batch_size):
-                end = min(start + batch_size, total_jobs)
-                batch = job_names[start:end]
-
+        results = []
+        with tqdm(total=num_batches, desc="Processing Batches", unit="batch", disable=not show_progress) as pbar:
+            for batch in batches:
                 job_embeddings = self.encode_texts(batch)
                 similarity_matrix = 1 - cdist(job_embeddings, alias_embeddings, metric="cosine")
 
@@ -103,10 +101,6 @@ class CSCOder:
 
                     results.extend(match_results)
                     
-                    if show_progress:
-                        progress.update(task, advance=1)
-
-        if return_df:
-            return pd.DataFrame(results)
-
-        return results
+                pbar.update(1)
+            
+        return pd.DataFrame(results) if return_df else results
