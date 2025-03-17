@@ -27,13 +27,17 @@ def test_matching_accuracy(matcher, test_cases):
     # 获取匹配结果，输出格式为 DataFrame
     results_df = matcher.find_best_matches(job_series, top_n=1, batch_size=10, return_df=True)
     
-    # 输出匹配结果
+    # 添加预期匹配结果到 DataFrame
+    results_df["expected_csco_code"] = results_df["input"].map(expected_results)
+    
+    # 统一匹配结果和预期结果的格式
+    results_df["csco_code"] = results_df["csco_code"].str.replace("-", "").astype(int)
+    results_df["expected_csco_code"] = results_df["expected_csco_code"].fillna(0).astype(int)
+    
+    # 输出匹配结果 方便调试
     results_df.to_csv("test_results.csv", index=False)
-
-    # 计算准确率
-    matched_count = sum(
-        results_df["csco_code"].eq(results_df["job_title"].map(expected_results))
-    )
+    
+    matched_count = sum(results_df["csco_code"] == results_df["expected_csco_code"])
     accuracy = matched_count / len(test_cases)
     
     print(f"匹配准确率: {accuracy:.2%}")
