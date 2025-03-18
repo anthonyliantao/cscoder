@@ -1,15 +1,12 @@
-import json
 import pytest
 import pandas as pd
-from cscoder.csco_matcher import CSCOder
+from cscoder.coder import CSCOder
 
 # 定义测试数据路径
-TEST_DATA_PATH = "data/testcases.xlsx"
-OUTPUT_DATA_PATH = "data/testcases_result.csv"
+TEST_DATA_PATH = "data/testcases.csv"
+
 
 # 读取测试数据
-
-
 @pytest.fixture(scope="module")
 def test_cases():
     test_df = pd.read_excel(TEST_DATA_PATH)
@@ -34,8 +31,6 @@ def test_matching_accuracy(matcher, test_cases):
     results_df = pd.concat(
         [results_df, test_cases[['expected_code', 'expected_name']]], axis=1)
 
-    # 输出匹配结果 方便调试
-    results_df.to_csv(OUTPUT_DATA_PATH, index=False)
 
     matched_count = sum(results_df["csco_code"] == results_df["expected_code"])
     accuracy = matched_count / len(test_cases)
