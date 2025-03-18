@@ -63,7 +63,7 @@ class CSCOder:
 
     def _encode_texts(self, texts, *args, **kwargs):
         """文本编码为向量"""
-        return np.array(self.model.encode(texts, convert_to_numpy=True, *args, **kwargs))
+        return np.array(self.model.encode(texts, convert_to_numpy=True, normalize_embeddings=True, *args, **kwargs))
 
     def _match(self, job_embeddings, top_n=1, match_prt_lvl=False):
         """相似度匹配"""
