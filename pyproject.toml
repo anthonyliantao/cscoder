@@ -13,12 +13,30 @@ dependencies = [
     "sentence-transformers",
     "scipy",
     "numpy",
+    "pandas",
+    "tqdm",
     "pytest"
 ]
 
-[tool.setuptools.packages.find]
-include = ["cscoder", "cscoder.*"]
+[project.optional-dependencies]
+dev = ["black", "flake8", "pytest"]
 
+[project.scripts]
+cscoder = "cscoder.cli:main"
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cscoder*"]
 
 [project.urls]
 "Homepage" = "https://github.com/anthonyliantao/cscoder"
