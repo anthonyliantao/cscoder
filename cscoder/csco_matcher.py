@@ -82,16 +82,16 @@ class CSCOder:
     def _check_code_for_similarity(self, csco_code, sim_score):
         """根据相似度返回对应层级的代码"""
         csco_code = str(csco_code)
-        if sim_score >= 0.9:
+        if sim_score >= 0.8:
             return csco_code                     # 7位代码
-        elif sim_score >= 0.7:
+        elif sim_score >= 0.6:
             return csco_code[:5] + "00"          # 5位代码
-        elif sim_score >= 0.5:
+        elif sim_score >= 0.4:
             return csco_code[:3] + "0000"        # 3位代码
-        elif sim_score >= 0.3:
+        elif sim_score >= 0.2:
             return csco_code[:3] + "0000"        # 1位代码
         else:
-           return None                           # 低于 0.3，不匹配
+           return "8000000"                      # 低于 0.2，返回不便分类人员
 
     def find_best_match(self, job_name, top_n=1, return_df=True):
         """匹配单个职业"""
