@@ -3,9 +3,9 @@ import re
 
 
 # 加载地理实体名词
-def load_geo_ents(geo_file='data/cncity.xlsx'):
+def load_geo_ents(geo_file='data/cncity.csv'):
     """加载地理实体名称（省、市、区、县）"""
-    geo_df = pd.read_excel(geo_file, usecols=['name', 'short_name'])
+    geo_df = pd.read_csv(geo_file, usecols=['name', 'short_name'])
     geo_ents = set(geo_df.dropna().values.flatten())
     return geo_ents
 
