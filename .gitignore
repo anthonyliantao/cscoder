@@ -183,3 +183,4 @@ cython_debug/
 # Temporary scripts and output
 scripts/
 out/
+models/
