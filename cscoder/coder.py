@@ -65,8 +65,8 @@ class CSCOder:
         """文本编码为向量"""
         return np.array(self.model.encode(texts, convert_to_numpy=True, *args, **kwargs))
 
-    def _hierarchy_match(self, job_embeddings, top_n=1):
-        """层级匹配"""
+    def _match(self, job_embeddings, top_n=1, match_prt_lvl=False):
+        """相似度匹配"""
         similarity_matrix = 1 - \
             cdist(job_embeddings, self.alias_embeddings, metric="cosine")
 
@@ -77,20 +77,19 @@ class CSCOder:
             for idx in top_indices:
                 sim_score = scores[idx]
                 csco_code = self.alias_df.iloc[idx]["code"]
-                final_csco_code = self._check_code_for_similarity(
-                    csco_code, sim_score)
-                final_csco_name = self.csco_data.get(str(final_csco_code))
+                csco_code = self._match_parent_level(csco_code, sim_score) if match_prt_lvl else csco_code
+                csco_name = self.csco_data.get(str(csco_code))
                 results.append(
                     {
-                        "matched_code": final_csco_code,
-                        "matched_name": final_csco_name,
+                        "matched_code": csco_code,
+                        "matched_name": csco_name,
                         "similarity": sim_score
                     })
 
         return results
 
-    def _check_code_for_similarity(self, csco_code, sim_score):
-        """根据相似度返回对应层级的代码"""
+    def _match_parent_level(self, csco_code, sim_score):
+        """根据相似度返回对应层级的父级代码"""
         csco_code = str(csco_code)
         if sim_score >= 0.8:
             return csco_code                     # 7位代码
@@ -103,21 +102,21 @@ class CSCOder:
         else:
             return "8000000"                      # 低于 0.2，返回不便分类人员
 
-    def find_best_match(self, job_name, top_n=1, return_df=True):
+    def find_best_match(self, job_name, top_n=1, return_df=True, match_prt_level=False):
         """匹配单个职业"""
         if not job_name.strip():
             return []
 
         job_embedding = self._encode_texts([clean_job_name(job_name)])
-        match_results = self._hierarchy_match(job_embedding, top_n)
+        match_results = self._match(job_embedding, top_n, match_prt_level)
         results = [{"input": job_name, **match} for match in match_results]
 
         return results if not return_df else pd.DataFrame(results)
 
-    def find_best_matches(self, job_names, top_n=1, batch_size=1000, return_df=True, show_progress=False):
+    def find_best_matches(self, job_names, top_n=1, batch_size=1000, return_df=True, show_progress=False, match_prt_level=False):
         """匹配多个职业"""
         if isinstance(job_names, str):
-            return self.find_best_match(job_names, top_n, return_df)
+            return self.find_best_match(job_names, top_n, return_df, match_prt_level)
 
         if isinstance(job_names, pd.Series):
             job_names = job_names.astype(str).tolist()
@@ -134,7 +133,7 @@ class CSCOder:
         with tqdm(total=len(batches), desc="Processing Batches", unit="batch", disable=not show_progress) as pbar:
             for batch in batches:
                 job_embeddings = self._encode_texts(batch)
-                batch_results = self._hierarchy_match(job_embeddings, top_n)
+                batch_results = self._match(job_embeddings, top_n, match_prt_level)
                 results.extend([{"input": input, **match}
                                for input, match in zip(batch, batch_results)])
                 pbar.update(1)
