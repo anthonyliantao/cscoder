@@ -31,7 +31,6 @@ def test_matching_accuracy(matcher, test_cases):
     results_df = pd.concat(
         [results_df, test_cases[['expected_code', 'expected_name']]], axis=1)
 
-
     matched_count = sum(results_df["csco_code"] == results_df["expected_code"])
     accuracy = matched_count / len(test_cases)
 
