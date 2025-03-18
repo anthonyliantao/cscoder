@@ -24,7 +24,7 @@ def remove_puncs(text):
 def remove_dynamic_stopwords(text):
     """移除动态的停止词，如上X休X、早X晚X、月入X等"""
     pattern = re.compile(
-        r'(提供|\+|有|包|管)[吃住社保饭补餐补免费住宿宿舍分红带薪培训法休师傅带教五险一金]+|'  # 提供/+/有 + 福利
+        r'(提供|\+|有|包|管|\/)[吃住社保饭补餐补免费住宿宿舍分红带薪培训法休师傅带教五险一金员工餐]+|'  # 提供/+/有 + 福利
         r'(接受)?[小白无经验生熟手]+[均皆都]?可|'  # 接受小白、生熟手均可等
         r'月(入|入过|均过)?\d+[kK千万起]?|'  # 月入X、月过X等
         r'(薪资|待遇)面议|'  # X面议
@@ -70,7 +70,7 @@ def remove_codelike_words(text):
 
 def remove_geo_ents(text):
     """删除地理实体"""
-    pattern = re.compile(r'\b(' + '|'.join(map(re.escape, GEO_ENTS)) + r')\b')
+    pattern = re.compile(r'(' + '|'.join(map(re.escape, GEO_ENTS)) + r')')
     return pattern.sub("", text)
 
 
@@ -86,3 +86,8 @@ def clean_job_name(text):
     text = remove_geo_ents(text)
     text = remove_puncs(text)
     return text.strip()
+
+
+if __name__ == "__main__":
+    text = "昆明木木夕木目心...招聘陈列员"
+    print(clean_job_name(text))
