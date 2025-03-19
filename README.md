@@ -7,10 +7,10 @@
 
 ## 安装
 
-目前 `cscoder` 仅提供 GitHub Release，可通过以下方式安装：
+pip 安装：
 
-```sh
-pip install git+https://github.com/anthonyliantao/cscoder.git
+```
+pip install cscoder==0.2.1
 ```
 
 ## 使用示例
