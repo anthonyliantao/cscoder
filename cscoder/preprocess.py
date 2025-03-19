@@ -1,9 +1,11 @@
+import os
 import pandas as pd
 import re
 
+DATA_DIR = os.path.join(os.path.dirname(__file__), "./data")
 
 # 加载地理实体名词
-def load_geo_ents(geo_file='data/cncity.csv'):
+def load_geo_ents(geo_file=os.path.join(DATA_DIR, 'cncity.csv')):
     """加载地理实体名称（省、市、区、县）"""
     geo_df = pd.read_csv(geo_file, usecols=['name', 'short_name'])
     geo_ents = set(geo_df.dropna().values.flatten())
@@ -13,7 +15,7 @@ def load_geo_ents(geo_file='data/cncity.csv'):
 GEO_ENTS = load_geo_ents()
 
 # 加载停止词
-with open("data/stopwords.txt", "r", encoding="utf-8") as f:
+with open(os.path.join(DATA_DIR, 'stopwords.txt'), "r", encoding="utf-8") as f:
     STOPWORDS = {line.strip() for line in f if line.strip()}
 
 def remove_puncs(text):
