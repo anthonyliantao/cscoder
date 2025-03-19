@@ -4,12 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cscoder"
-version = "0.2.1"
+version = "0.2.3"
 description = "A Python package for matching unstructure job titles with China Standard Classifications of Occupations (CSCO)."
 authors = [{name = "Antao Li", email = "anthony.li.antao@outlook.com"}]
 readme = "README.md"
 license = {text = "MIT"}
 dependencies = [
+    "importlib-resources; python_version<'3.9'",
     "sentence-transformers",
     "scipy",
     "numpy",
@@ -33,6 +34,9 @@ dev = ["black", "flake8", "pytest"]
 
 [project.scripts]
 cscoder = "cscoder.cli:main"
+
+[tool.setuptools.package-data]
+cscoder = ["data/*"]
 
 [tool.setuptools.packages.find]
 where = ["."]

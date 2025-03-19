@@ -10,7 +10,7 @@
 pip 安装：
 
 ```
-pip install cscoder==0.2.1
+pip install cscoder==0.2.3
 ```
 
 ## 使用示例
