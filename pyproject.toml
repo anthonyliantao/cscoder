@@ -1,22 +1,23 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "cscoder"
-version = "0.2.3"
+version = "0.2.4"
 description = "A Python package for matching unstructure job titles with China Standard Classifications of Occupations (CSCO)."
 authors = [{name = "Antao Li", email = "anthony.li.antao@outlook.com"}]
 readme = "README.md"
 license = {text = "MIT"}
+requires-python = ">=3.8"
+
 dependencies = [
     "importlib-resources; python_version<'3.9'",
     "sentence-transformers",
     "scipy",
     "numpy",
     "pandas",
-    "tqdm",
-    "pytest"
+    "tqdm"
 ]
 
 classifiers = [
