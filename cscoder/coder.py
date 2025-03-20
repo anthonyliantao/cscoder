@@ -1,5 +1,6 @@
 from sentence_transformers import SentenceTransformer
 from scipy.spatial.distance import cdist
+from collections import OrderedDict
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
@@ -13,19 +14,23 @@ class CSCOder:
 
     该类提供了加载模型、处理职业名称、计算相似度以及返回匹配结果的功能。
     """
-    
-    def __init__(self, version="csco22", model_name="paraphrase-multilingual-MiniLM-L12-v2"):
+
+    def __init__(self, version="csco22", model_name="paraphrase-multilingual-MiniLM-L12-v2", disable_cache=False):
         """
         初始化 CSCOder 实例。
 
         :param version: CSCO 数据的版本，默认为 "csco22"。
         :param model_name: 用于文本嵌入的模型名称，默认为 "paraphrase-multilingual-MiniLM-L12-v2"。
+        :param disable_cache: 是否禁用缓存，默认开启。
         """
         self.model_name = model_name
         self.version = version
+        self.disable_cache = disable_cache
         self._model = None
         self._csco_data = None
         self._alias_data = None
+        self._cache = OrderedDict() if not disable_cache else None
+        self.cache_size = 500000 if not disable_cache else None
 
     @property
     def model(self):
@@ -72,9 +77,44 @@ class CSCOder:
         """返回职业别名数据的嵌入矩阵。"""
         return self.alias_data[1]
 
+    def _store_in_cache(self, texts, vectors):
+        """存入缓存 自动淘汰最久未使用的项"""
+        for text, vector in zip(texts, vectors):
+            self._cache[text] = vector
+            self._cache.move_to_end(text)
+
+            if len(self._cache) >= self.cache_size:
+                self._cache.popitem(last=False)
+
     def _encode_texts(self, texts, *args, **kwargs):
         """将文本编码为向量。"""
-        return np.array(self.model.encode(texts, convert_to_numpy=True, normalize_embeddings=True, *args, **kwargs))
+        if self.disable_cache:
+            return np.array(self.model.encode(texts, convert_to_numpy=True, normalize_embeddings=True, *args, **kwargs))
+
+        results = [None] * len(texts)
+        text_positions = {}  # 用于记录未缓存文本的索引位置
+        texts_to_encode = list(
+            {text for text in texts if text not in self._cache})
+
+        # 遍历 texts，查找缓存命中，并收集未缓存文本
+        for i, text in enumerate(texts):
+            if text in self._cache:
+                results[i] = self._cache[text]
+            else:
+                text_positions.setdefault(text, []).append(i)
+
+        # 计算未缓存文本向量
+        if texts_to_encode:
+            vectors = self.model.encode(
+                texts_to_encode, convert_to_numpy=True, normalize_embeddings=True, *args, **kwargs
+            )
+            self._store_in_cache(texts_to_encode, vectors)
+
+            for text, vector in zip(texts_to_encode, vectors):
+                for i in text_positions[text]:
+                    results[i] = vector
+
+        return np.array(results)
 
     def _match(self, job_embeddings, top_n=1, match_prt_lvl=False):
         """
@@ -95,7 +135,8 @@ class CSCOder:
             for idx in top_indices:
                 sim_score = scores[idx]
                 csco_code = self.alias_df.iloc[idx]["code"]
-                csco_code = self._match_parent_level(csco_code, sim_score) if match_prt_lvl else csco_code
+                csco_code = self._match_parent_level(
+                    csco_code, sim_score) if match_prt_lvl else csco_code
                 csco_name = self.csco_data.get(str(csco_code))
                 results.append(
                     {
@@ -175,7 +216,8 @@ class CSCOder:
         with tqdm(total=len(batches), desc="Processing Batches", unit="batch", disable=not show_progress) as pbar:
             for batch in batches:
                 job_embeddings = self._encode_texts(batch)
-                batch_results = self._match(job_embeddings, top_n, match_prt_level)
+                batch_results = self._match(
+                    job_embeddings, top_n, match_prt_level)
                 results.extend([{"input": input, **match}
                                for input, match in zip(batch, batch_results)])
                 pbar.update(1)
