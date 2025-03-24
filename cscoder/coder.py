@@ -186,12 +186,13 @@ class CSCOder:
 
         return results if not return_df else pd.DataFrame(results)
 
-    def find_best_matches(self, job_names, top_n=1, batch_size=1000, return_df=True, show_progress=False, match_prt_level=False):
+    def find_best_matches(self, job_names, top_n=1, clean_job_names=True,batch_size=1000, return_df=True, show_progress=False, match_prt_level=False):
         """
         批量匹配多个职业并返回匹配结果。
 
         :param job_names: 职业名称列表或字符串。
         :param top_n: 返回最相似的前 N 个匹配，默认为 1。
+        :param clean_job_names: 是否清洗职业名称，默认为 True。
         :param batch_size: 每批处理的职业数量，默认为 1000。
         :param return_df: 是否返回 DataFrame 格式，默认为 True。
         :param show_progress: 是否显示进度条，默认为 False。
@@ -206,8 +207,10 @@ class CSCOder:
 
         if not isinstance(job_names, list):
             raise ValueError("job_names 必须是字符串、列表或 pd.Series")
-
-        job_names = list(map(clean_job_name, job_names))
+        
+        if clean_job_names:
+            job_names = list(map(clean_job_name, job_names))
+        
         total_jobs = len(job_names)
         batches = [job_names[i: i + batch_size]
                    for i in range(0, total_jobs, batch_size)]
